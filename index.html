@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sansürsüz RP - Gerçekçi Rol Yapma</title>
+    <style>
+        body { margin:0; font-family: system-ui, sans-serif; background:#0f0f11; color:#ddd; }
+        .container { display:flex; height:100vh; }
+        .sidebar { width:260px; background:#1a1a1a; padding:20px; border-right:1px solid #333; overflow-y:auto; }
+        .main { flex:1; display:flex; flex-direction:column; }
+        .chat-header { background:#1f1f1f; padding:15px; border-bottom:1px solid #333; display:flex; justify-content:space-between; }
+        .chat-area { flex:1; padding:20px; overflow-y:auto; background:#0a0a0a; }
+        .message { margin:18px 0; max-width:80%; padding:12px; border-radius:10px; }
+        .user { background:#ff3366; color:white; margin-left:auto; }
+        .bot { background:#25252b; }
+        .action { font-style:italic; color:#bbb; }
+        .input-area { padding:15px; background:#1f1f1f; display:flex; }
+        input { flex:1; padding:14px; background:#333; border:none; color:white; border-radius:8px; font-size:16px; }
+        button { margin-left:10px; padding:14px 24px; background:#ff3366; border:none; color:white; border-radius:8px; cursor:pointer; font-weight:bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+  <div class="sidebar">
+    <h2>🖤 Sansürsüz RP</h2>
+    <p><strong>Profil:</strong> <span id="username">Sen</span></p>
+    <button onclick="editProfile()" style="width:100%">Profili Düzenle</button>
+    <hr>
+    <button onclick="newRP()" style="width:100%; padding:12px; margin:10px 0;">+ Yeni RP Başlat</button>
+    <h3>Karakter Oluştur (Yakında)</h3>
+    <small>Çoklu RP ve karakter yönetimi eklenecek.</small>
+  </div>
+  <div class="main">
+    <div class="chat-header">
+      <strong id="rp-title">Hoş geldin! Yeni RP başlat</strong>
+    </div>
+    <div id="chat" class="chat-area"></div>
+    <div class="input-area">
+      <input id="inp" placeholder="*Eylemini yaz* veya "Konuşmanı yaz" " onkeypress="if(event.key==='Enter') send()">
+      <button onclick="send()">Gönder</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentRP = null;
+let profile = {name: 'RP Sever'};
+
+function editProfile() {
+  let name = prompt('Kullanıcı adın nedir?', profile.name);
+  if (name) {
+    profile.name = name;
+    document.getElementById('username').textContent = name;
+  }
+}
+
+function newRP() {
+  let title = prompt('RP başlığı gir (örnek: Karanlık Sokaklarda)', 'Gece Karşılaşması');
+  if (!title) return;
+  currentRP = {title, messages: []};
+  document.getElementById('rp-title').textContent = title;
+  const chat = document.getElementById('chat');
+  chat.innerHTML = `<p style="opacity:0.7">${title} başladı. İlk hamleni yap...</p>`;
+}
+
+function send() {
+  const inp = document.getElementById('inp');
+  const txt = inp.value.trim();
+  if (!txt || !currentRP) return;
+  addMessage('user', txt);
+  inp.value = '';
+  setTimeout(botReply, 650);
+}
+
+function addMessage(sender, text) {
+  if (!currentRP) return;
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = `message ${sender}`;
+  const formatted = text.replace(/\*([^\*]+)\*/g, '<span class="action">*$1*</span>');
+  div.innerHTML = `<strong>${sender === 'user' ? profile.name : 'Karakter'}</strong><br>${formatted}`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function botReply() {
+  const sampleReplies = [
+    `*Yavaşça sana yaklaşıyor ve dudaklarını ısırıyor* "Beni mi arıyordun?"`,
+    `*Göz teması kuruyor* "Burası riskli... ama seninle her şeye varım."`,
+    `*Elini beline koyuyor* "Ne istiyorsun benden? Dürüst ol."`,
+    `*Fısıltıyla kulağına* "Kimse görmeden gidelim mi?"`
+  ];
+  const reply = sampleReplies[Math.floor(Math.random() * sampleReplies.length)];
+  addMessage('bot', reply);
+}
+
+// Init
+window.onload = () => {
+  document.getElementById('username').textContent = profile.name;
+};
+</script>
+</body>
+</html>
